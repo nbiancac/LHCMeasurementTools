@@ -1,5 +1,5 @@
 import numpy as np
-import timber_manag3 as tm3
+import TimberManager as tm
 
 class filled_buckets:
     def __init__(self, timber_variable_filled_bucket, beam=0):
@@ -7,7 +7,7 @@ class filled_buckets:
         if type(timber_variable_filled_bucket) is str:
             if not (beam == 1 or beam == 2):
                 raise ValueError('You need to specify which beam! (1 or 2)')
-            dict_timber = tm3.parse_timber_file(timber_variable_filled_bucket, verbose=True)
+            dict_timber = tm.parse_timber_file(timber_variable_filled_bucket, verbose=True)
             timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
             
         self.tstamps = np.array(timber_variable_filled_bucket.t_stamps)
@@ -52,17 +52,17 @@ class blength:
         if type(timber_variable_blength) is str:
             if not (beam == 1 or beam == 2):
                 raise ValueError('You need to specify which beam! (1 or 2)')
-            dict_timber = tm3.parse_timber_file(timber_variable_blength, verbose=True)
+            dict_timber = tm.parse_timber_file(timber_variable_blength, verbose=True)
             timber_variable_blength = dict_timber[get_variable_dict(beam)['BUNCH_LENGTH']]
             if timber_variable_filled_bucket == None:
                 timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
 
-        if isinstance(timber_variable_filled_bucket,tm3.timber_variable_list):
+        if isinstance(timber_variable_filled_bucket,tm.timber_variable_list):
             fillbuck_obj = filled_buckets(timber_variable_filled_bucket)
         elif type(timber_variable_filled_bucket) is str:
             if not (beam == 1 or beam == 2):
                 raise ValueError('You need to specify which beam! (1 or 2)')
-            dict_timber = tm3.parse_timber_file(timber_variable_filled_bucket, verbose=True)
+            dict_timber = tm.parse_timber_file(timber_variable_filled_bucket, verbose=True)
             timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
             fillbuck_obj = filled_buckets(timber_variable_filled_bucket)
         elif isinstance(timber_variable_filled_bucket, filled_buckets):
@@ -118,3 +118,11 @@ def get_variable_dict(beam):
     var_dict['BUNCH_LENGTH'] = 'LHC.BQM.B%d:BUNCH_LENGTHS'%beam
 
     return var_dict
+
+
+def variable_list(beams = [1,2]):
+    var_list = []
+    for beam in beams:
+		var_list += get_variable_dict(beam).values()
+
+    return var_list

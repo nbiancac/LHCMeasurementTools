@@ -1,11 +1,10 @@
-
 import sys, os
 BIN = os.path.expanduser("../")
 sys.path.append(BIN)
 
 import TimberManager as tm
 import LHC_FBCT
-import timestamp_helpers as th
+import TimestampHelpers as th
 
 import numpy as np
 

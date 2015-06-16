@@ -1,12 +1,12 @@
 import numpy as np
-import timber_manag3 as tm3
+import TimberManager as tm
 
 class energy:
     def __init__(self, timber_variable_energy, beam=0):
         if type(timber_variable_energy) is str:
             if not (beam == 1 or beam == 2):
                 raise ValueError('You need to specify which beam! (1 or 2)')
-            dict_timber = tm3.parse_timber_file(timber_variable_energy, verbose=True)
+            dict_timber = tm.parse_timber_file(timber_variable_energy, verbose=True)
             timber_variable_energy = dict_timber[get_variable_dict(beam)['ENERGY']]
 
         self.tstamps = timber_variable_energy.t_stamps
@@ -26,6 +26,12 @@ class energy:
 
 def get_variable_dict(beam):
     var_dict = {}
-    var_dict['ENERGY'] = 'LHC.BSRA.US45.B2:ABORT_GAP_ENERGY'%beam
-
+    var_dict['ENERGY'] = 'LHC.BSRA.US45.B%d:ABORT_GAP_ENERGY'%beam
     return var_dict
+
+def variable_list(beams = [1,2]):    
+    var_list = []
+    for beam in beams:
+		var_list += get_variable_dict(beam).values()
+
+    return var_list
