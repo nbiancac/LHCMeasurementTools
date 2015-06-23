@@ -9,8 +9,8 @@ import LHC_BSRT
 import lhc_log_db_query as lldb
 import pickle
 
-pkl_name = 'fills_and_bmodes.pkl'
 filln = 3859
+pkl_name = 'fills_and_bmodes.pkl'
 
 with open(pkl_name, 'rb') as fid:
     dict_fill_bmodes = pickle.load(fid)
@@ -25,4 +25,4 @@ varlist += LHC_Energy.variable_list()
 varlist += LHC_BSRT.variable_list()
 
 
-lldb.dbquery(varlist, t_start_fill, t_end_fill, 'fill_%d_with_bsrt.csv'%filln)
+lldb.dbquery(varlist, t_start_fill, t_end_fill, 'fill_%d.csv'%filln)

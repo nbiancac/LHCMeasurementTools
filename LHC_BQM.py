@@ -10,7 +10,7 @@ class filled_buckets:
             dict_timber = tm.parse_timber_file(timber_variable_filled_bucket, verbose=True)
             timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
             
-        self.tstamps = np.array(timber_variable_filled_bucket.t_stamps)
+        self.t_stamps = np.array(timber_variable_filled_bucket.t_stamps)
         self.fillbuck = timber_variable_filled_bucket.values		
         self.fillbuck = map(lambda x: np.array(map(lambda y: int(float(y)), x)), self.fillbuck)
         self.fillbuck = map(lambda x: (x-1)/10, self.fillbuck)
@@ -25,8 +25,8 @@ class filled_buckets:
 			
 		
     def nearest_older_sample(self, t_obs):
-        ind_min = np.argmin(np.abs(self.tstamps - t_obs))
-        if self.tstamps[ind_min] > t_obs:
+        ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
+        if self.t_stamps[ind_min] > t_obs:
             ind_min -= 1
 		
         if ind_min == -1:
@@ -35,8 +35,8 @@ class filled_buckets:
             return self.fillbuck[ind_min]
 			
     def nearest_older_sample_flag_filled_Nbun(self, t_obs):
-        ind_min = np.argmin(np.abs(self.tstamps - t_obs))
-        if self.tstamps[ind_min] > t_obs:
+        ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
+        if self.t_stamps[ind_min] > t_obs:
             ind_min -= 1 
 
         if ind_min == -1:
@@ -70,33 +70,33 @@ class blength:
         elif timber_variable_filled_bucket == None:
             raise TypeError('You need to provide a filled_bucket file or object!')
 		
-        self.tstamps = timber_variable_blength.t_stamps
+        self.t_stamps = timber_variable_blength.t_stamps
         self.blen = []
         blen_timberstyle = timber_variable_blength.values
         blen_timberstyle = map(lambda x: np.array(map(float, x)), blen_timberstyle)
 	
-        N_acq = len(self.tstamps)
+        N_acq = len(self.t_stamps)
         
         for ii in xrange(N_acq):
             blen_vect = np.zeros(3564) 
-            flag_filled_curr, Nbun_curr = fillbuck_obj.nearest_older_sample_flag_filled_Nbun(self.tstamps[ii])
+            flag_filled_curr, Nbun_curr = fillbuck_obj.nearest_older_sample_flag_filled_Nbun(self.t_stamps[ii])
             blen_vect[flag_filled_curr] = (blen_timberstyle[ii][:Nbun_curr])
             self.blen.append(blen_vect)
 			
-        self.tstamps = np.array(self.tstamps)
+        self.t_stamps = np.array(self.t_stamps)
         self.avblen = np.array(map(mean_nonzero, self.blen))
 
 
     def nearest_older_sample(self, t_obs, flag_return_time=False):
-        ind_min = np.argmin(np.abs(self.tstamps - t_obs))
-        if self.tstamps[ind_min]>t_obs:
+        ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
+        if self.t_stamps[ind_min]>t_obs:
             ind_min -= 1
 	
         if flag_return_time:	
             if ind_min == -1:
                 return 0.*self.blen[ind_min], -1
             else:	
-                return self.blen[ind_min], self.tstamps[ind_min]
+                return self.blen[ind_min], self.t_stamps[ind_min]
         else:
             if ind_min == -1:
                 return 0.*self.blen[ind_min]

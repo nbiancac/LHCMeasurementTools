@@ -9,17 +9,16 @@ class energy:
             dict_timber = tm.parse_timber_file(timber_variable_energy, verbose=True)
             timber_variable_energy = dict_timber[get_variable_dict(beam)['ENERGY']]
 
-        self.tstamps = timber_variable_energy.t_stamps
+        self.t_stamps = timber_variable_energy.t_stamps
         self.energy = timber_variable_energy.values
-		
         self.energy = map(lambda x: float(x[0]), self.energy)
 	
-        self.tstamps=np.array(self.tstamps)
-        self.energy=np.array(self.energy)
+        self.t_stamps = np.array(self.t_stamps)
+        self.energy = np.array(self.energy)
 		
     def nearest_older_sample(self, t_obs):
-        ind_min = np.argmin(np.abs(self.tstamps - t_obs))
-        if self.tstamps[ind_min] > t_obs:
+        ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
+        if self.t_stamps[ind_min] > t_obs:
             ind_min -= 1
         return self.energy[ind_min]
 	

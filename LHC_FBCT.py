@@ -10,23 +10,23 @@ class FBCT:
             dict_timber = tm.parse_timber_file(timber_variable_FBCT, verbose=True)
             timber_variable_FBCT = dict_timber[get_variable_dict(beam)['BUNCH_INTENSITY']]
 
-        self.tstamps = timber_variable_FBCT.t_stamps
+        self.t_stamps = timber_variable_FBCT.t_stamps
         self.bint = timber_variable_FBCT.values
         self.bint = map(lambda x: np.array(map(float, x)), self.bint)
 
-        self.tstamps = np.array(self.tstamps)
+        self.t_stamps = np.array(self.t_stamps)
         self.totint = np.array(map(sum, self.bint))
 		
 
     def nearest_older_sample(self, t_obs, flag_return_time=False):
-        ind_min = np.argmin(np.abs(self.tstamps - t_obs))
-        if self.tstamps[ind_min] > t_obs:
+        ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
+        if self.t_stamps[ind_min] > t_obs:
             ind_min -= 1
         if flag_return_time:	
             if ind_min == -1:
                 return 0.*self.bint[ind_min], -1
             else:	
-                return self.bint[ind_min], self.tstamps[ind_min]
+                return self.bint[ind_min], self.t_stamps[ind_min]
         else:
             if ind_min == -1:
                 return 0.*self.bint[ind_min]

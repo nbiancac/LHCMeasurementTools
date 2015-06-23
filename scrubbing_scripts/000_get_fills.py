@@ -6,8 +6,8 @@ import lhc_log_db_query as lldb
 import TimestampHelpers as th
 import LHC_Fills
 
-t_start_string = '2015_06_14 15:30:00'
-t_stop_string = '2015_06_14 21:30:00'
+t_start_string = '2015_06_24 00:00:00'
+t_stop_string = '2015_06_24 23:00:00'
 
 t_start = th.localtime2unixstamp(t_start_string)
 t_stop = th.localtime2unixstamp(t_stop_string)
