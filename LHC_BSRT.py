@@ -8,7 +8,10 @@ class BSRT:
         if not (beam == 1 or beam == 2):
             raise ValueError('You need to specify which beam! (1 or 2)')
         self.beam = beam
-        dict_timber = tm.parse_timber_file(timber_variable_bsrt, verbose=True)
+        if type(timber_variable_bsrt) is dict:
+            dict_timber = timber_variable_bsrt
+        else:
+            dict_timber = tm.parse_timber_file(timber_variable_bsrt, verbose=True)
 
         sigma_h = dict_timber[get_variable_dict(beam)['SIGMA_H']]
         sigma_v = dict_timber[get_variable_dict(beam)['SIGMA_V']]
@@ -93,6 +96,8 @@ class BSRT:
         self.find_start_scans(scan_thresh)
         ind_closest_scan = np.argmin(np.abs(t_start_requested - self.t_start_scans))
         t_start = self.t_start_scans[ind_closest_scan]
+        if ind_closest_scan + 1 >= len(self.t_start_scans):
+            raise IndexError('Index ind_closest_scan + 1 is out of bounds.\nYour requested scan times might be outside of the fill.')
         t_stop = self.t_start_scans[ind_closest_scan + 1]
         return Masked(self, t_start, t_stop)
 

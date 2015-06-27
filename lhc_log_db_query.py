@@ -26,8 +26,10 @@ def dbquery(varlist, t_start, t_stop, filename):
 		varlist_str += var+','
 	varlist_str = varlist_str[:-1]
 	
-	execut = 'java -jar accsoft-cals-extractor-client-nodep.jar '
-	config = ' -C ldb_UTC.conf '
+        currpath = os.path.abspath('.')
+
+	execut = 'java -jar %s/accsoft-cals-extractor-client-nodep.jar '%(currpath+'/LHCMeasurementTools')
+	config = ' -C %s/ldb_UTC.conf '%(currpath+'/LHCMeasurementTools')
 	time_interval = ' -t1 "'+ t_start_str_UTC +'" -t2 "'+t_stop_str_UTC+'"' 
 	variables = '-vs "%s"'%(varlist_str)
 	outpfile = ' -N .//'+filename

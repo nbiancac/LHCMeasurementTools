@@ -1,6 +1,8 @@
 import numpy as np
 import TimberManager as tm
+import TimestampHelpers as th
 import pickle
+import time
 
 
 class fillnumber:
@@ -14,7 +16,14 @@ class fillnumber:
 
     def fill_start_end(self, filln_to_find):
         i_found = np.where(self.filln==filln_to_find)[0][0]
-        return self.t_stamps[i_found], self.t_stamps[i_found+1]
+        t_start_fill = self.t_stamps[i_found]
+        if t_start_fill == self.t_stamps[-1]:
+            t_end_fill = time.mktime(time.localtime())
+            flag_complete = False
+        else:
+            t_end_fill = self.t_stamps[i_found+1]
+            flag_complete = True
+        return t_start_fill, t_end_fill, flag_complete
 
 
 def make_pickle(csv_filename, pkl_filename):
@@ -37,14 +46,15 @@ def make_pickle(csv_filename, pkl_filename):
     fill_n_list = list(filln_obj.filln[filln_obj.filln > 0])
     dict_fill_bmodes = {}
 
-    for ii in xrange(len(fill_n_list) - 1):
+    for ii in xrange(len(fill_n_list) ):
 	filln = fill_n_list[ii]
 	print 'filln = %d'%filln
 	dict_fill_bmodes[filln] = {}
 
-	t_startfill, t_endfill = filln_obj.fill_start_end(filln)
+	t_startfill, t_endfill, flag_complete = filln_obj.fill_start_end(filln)
 	dict_fill_bmodes[filln]['t_startfill'] = t_startfill
 	dict_fill_bmodes[filln]['t_endfill'] = t_endfill
+	dict_fill_bmodes[filln]['flag_complete'] = flag_complete
 
 	for bmode in list_b_modes:
             dict_fill_bmodes[filln]['t_start_'+bmode] = -1.
@@ -57,9 +67,12 @@ def make_pickle(csv_filename, pkl_filename):
 
             ii_stop_bmode = np.where(np.logical_and(dict_t_start_stop_vects['t_stop_'+bmode] > t_startfill, 
                                                     dict_t_start_stop_vects['t_stop_'+bmode] < t_endfill))[0]
-            if len(ii_start_bmode) > 0:
+            # if len(ii_start_bmode) > 0:
+            #     dict_fill_bmodes[filln]['t_stop_'+bmode] = dict_t_start_stop_vects['t_stop_'
+            #                                                                        +bmode][ii_start_bmode[0]]
+            if len(ii_stop_bmode) > 0:
                 dict_fill_bmodes[filln]['t_stop_'+bmode] = dict_t_start_stop_vects['t_stop_'
-                                                                                   +bmode][ii_start_bmode[0]]
+                                                                                   +bmode][ii_stop_bmode[0]]
 
     with open(pkl_filename, 'wb') as fid:
 	pickle.dump(dict_fill_bmodes, fid)

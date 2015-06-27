@@ -2,16 +2,17 @@ import numpy as np
 import TimberManager as tm
 
 class filled_buckets:
-    def __init__(self, timber_variable_filled_bucket, beam=0):
+    def __init__(self, timber_variable, beam=0):
 
-        if type(timber_variable_filled_bucket) is str:
+        if type(timber_variable) is str:
             if not (beam == 1 or beam == 2):
                 raise ValueError('You need to specify which beam! (1 or 2)')
-            dict_timber = tm.parse_timber_file(timber_variable_filled_bucket, verbose=True)
-            timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
-            
-        self.t_stamps = np.array(timber_variable_filled_bucket.t_stamps)
-        self.fillbuck = timber_variable_filled_bucket.values		
+            dict_timber = tm.parse_timber_file(timber_variable, verbose=True)
+            timber_variable_filled = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
+        elif type(timber_variable) is dict:
+            timber_variable_filled = timber_variable[get_variable_dict(beam)['FILLED_BUCKETS']]            
+        self.t_stamps = np.array(timber_variable_filled.t_stamps)
+        self.fillbuck = timber_variable_filled.values		
         self.fillbuck = map(lambda x: np.array(map(lambda y: int(float(y)), x)), self.fillbuck)
         self.fillbuck = map(lambda x: (x-1)/10, self.fillbuck)
         self.fillbuck = map(lambda x: x[x>=0], self.fillbuck)
@@ -56,6 +57,13 @@ class blength:
             timber_variable_blength = dict_timber[get_variable_dict(beam)['BUNCH_LENGTH']]
             if timber_variable_filled_bucket == None:
                 timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
+
+        elif type(timber_variable_blength) is dict:
+            dict_timber = timber_variable_blength
+            timber_variable_blength = dict_timber[get_variable_dict(beam)['BUNCH_LENGTH']]
+            if timber_variable_filled_bucket == None:
+                timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
+
 
         if isinstance(timber_variable_filled_bucket,tm.timber_variable_list):
             fillbuck_obj = filled_buckets(timber_variable_filled_bucket)

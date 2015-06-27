@@ -1,5 +1,7 @@
 import time
 import numpy as np
+import datetime
+import matplotlib
 
 def unixstamp2datestring(t_stamp):
     return time.strftime("%Y_%m_%d", time.localtime(t_stamp))
@@ -19,3 +21,10 @@ def localtime2unixstamp(local_time_str, strformat='%Y_%m_%d %H:%M:%S'):
 
 def unixstamp2localtime(t_stamp, strformat='%Y_%m_%d %H:%M:%S'):
     return time.strftime(strformat, time.localtime(t_stamp))
+
+def unixstamp2localtimestamp(t_stamps):
+    tlocal = map(datetime.datetime.fromtimestamp, t_stamps)
+    return matplotlib.dates.date2num(tlocal)
+
+def unixstampNow():
+	return time.mktime(time.localtime())

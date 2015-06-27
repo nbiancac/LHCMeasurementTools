@@ -2,12 +2,14 @@ import numpy as np
 import TimberManager as tm
 
 class energy:
-    def __init__(self, timber_variable_energy, beam=0):
-        if type(timber_variable_energy) is str:
+    def __init__(self, timber_variable, beam=0):
+        if type(timber_variable) is str:
             if not (beam == 1 or beam == 2):
                 raise ValueError('You need to specify which beam! (1 or 2)')
-            dict_timber = tm.parse_timber_file(timber_variable_energy, verbose=True)
+            dict_timber = tm.parse_timber_file(timber_variable, verbose=True)
             timber_variable_energy = dict_timber[get_variable_dict(beam)['ENERGY']]
+        elif type(timber_variable) is dict:
+            timber_variable_energy = timber_variable[get_variable_dict(beam)['ENERGY']]
 
         self.t_stamps = timber_variable_energy.t_stamps
         self.energy = timber_variable_energy.values
