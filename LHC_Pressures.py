@@ -9,8 +9,8 @@ class Pressure(object):
         elif type(timber_variable) is dict:
             timber_press_gauge = timber_variable[press_gauge]
 
-        self.t_stamps = np.array(timber_press_gauge.t_stamps)
-        self.values = np.float_(np.array(timber_press_gauge.values).flatten())
+        self.t_stamps = np.float_(np.array(timber_press_gauge.t_stamps))
+        self.values = np.squeeze(np.float_(np.array(timber_press_gauge.values)))
 
 def get_variable_dict(gauge_group):
     var_dict = {}
