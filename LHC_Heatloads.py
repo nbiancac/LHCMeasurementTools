@@ -12,7 +12,7 @@ class Heatload:
             timber_variable_hl = timber_variable[get_variable_dict(sector)['ARC_AVG']]
 
         self.t_stamps = np.float_(np.array(timber_variable_hl.t_stamps))
-        self.hl = np.float_(np.array(timber_variable_hl.values).flatten())
+        self.hl = np.squeeze(np.float_(np.array(timber_variable_hl.values)))
 
 
 def get_variable_dict(sector):
