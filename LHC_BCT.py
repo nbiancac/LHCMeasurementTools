@@ -12,8 +12,8 @@ class BCT(object):
         elif type(timber_variable) is dict:
             timber_variable_BCT = timber_variable[get_variable_dict(beam)['BEAM_INTENSITY']]            
 
-        self.t_stamps = np.array(timber_variable_BCT.t_stamps)
-        self.values = np.float_(np.array(timber_variable_BCT.values).flatten())
+        self.t_stamps = np.float_(np.array(timber_variable_BCT.t_stamps))
+        self.values = np.squeeze(np.float_(np.array(timber_variable_BCT.values)))
 
     def nearest_older_sample(self, t_obs, flag_return_time=False):
         ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
