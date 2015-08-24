@@ -14,11 +14,12 @@ class fillnumber:
         self.t_stamps = np.array(map(float, dict_timber_filln['HX:FILLN'].t_stamps))
         self.filln = np.array(map(lambda x: int(x[0]),dict_timber_filln['HX:FILLN'].values))
 
-    def fill_start_end(self, filln_to_find):
+    def fill_start_end(self, filln_to_find, t_stop):
         i_found = np.where(self.filln==filln_to_find)[0][0]
         t_start_fill = self.t_stamps[i_found]
         if t_start_fill == self.t_stamps[-1]:
-            t_end_fill = time.mktime(time.localtime())
+            t_now = time.mktime(time.localtime())
+            t_end_fill = min(t_now, t_stop)
             flag_complete = False
         else:
             t_end_fill = self.t_stamps[i_found+1]
@@ -26,7 +27,7 @@ class fillnumber:
         return t_start_fill, t_end_fill, flag_complete
 
 
-def make_pickle(csv_filename, pkl_filename):
+def make_pickle(csv_filename, pkl_filename, t_stop):
     dict_fbm = tm.parse_timber_file(csv_filename)
     filln_obj = fillnumber(dict_fbm)
 
@@ -51,7 +52,7 @@ def make_pickle(csv_filename, pkl_filename):
 	print 'filln = %d'%filln
 	dict_fill_bmodes[filln] = {}
 
-	t_startfill, t_endfill, flag_complete = filln_obj.fill_start_end(filln)
+	t_startfill, t_endfill, flag_complete = filln_obj.fill_start_end(filln, t_stop)
 	dict_fill_bmodes[filln]['t_startfill'] = t_startfill
 	dict_fill_bmodes[filln]['t_endfill'] = t_endfill
 	dict_fill_bmodes[filln]['flag_complete'] = flag_complete

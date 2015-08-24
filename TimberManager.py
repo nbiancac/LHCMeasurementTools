@@ -21,6 +21,7 @@ class timber_data_line:
 			self.timestamp = timb_timestamp2float(t_string.split('.')[0])
 			self.ms = float(t_string.split('.')[-1])
 		self.data_strings = list_values[1:]
+                
 		
 class timber_variable_list:
 	def __init__(self):
@@ -53,6 +54,8 @@ def parse_timber_file(timber_filename, verbose=True):
 		else:
 			try:
 				currline_obj = timber_data_line(line, time_input_UTC=time_input_UTC)
+                                if currline_obj.data_strings == ['']:
+                                        raise ValueError
 				variables[vname].t_stamps.append(currline_obj.timestamp)
 				variables[vname].values.append(currline_obj.data_strings)
 				variables[vname].ms.append(currline_obj.ms)

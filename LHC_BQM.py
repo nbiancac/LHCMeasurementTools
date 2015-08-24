@@ -12,6 +12,13 @@ class filled_buckets:
             timber_variable_filled = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
         elif type(timber_variable) is dict:
             timber_variable_filled = timber_variable[get_variable_dict(beam)['FILLED_BUCKETS']]
+        elif isinstance(timber_variable, tm.timber_variable_list):
+            timber_variable_filled = timber_variable
+        else:
+			print 'Whaaaat?????'
+            
+            
+                       
         self.t_stamps = np.array(timber_variable_filled.t_stamps)
         self.fillbuck = timber_variable_filled.values
         self.fillbuck = map(lambda x: np.array(map(lambda y: int(float(y)), x)), self.fillbuck)
@@ -21,9 +28,16 @@ class filled_buckets:
         self.Nbun = map(len, self.fillbuck)
         N_acq = len(self.Nbun)
 
-        self.flag_filled = []
+        # self.flag_filled = []
+        # for ii in xrange(N_acq):
+        #     self.flag_filled.append(np.array(map(lambda x: x in self.fillbuck[ii], range(3564))))
+        N_slots = 3564
+        self.flag_filled = np.array(N_acq * [N_slots * [False]])
+        array_slots = np.array(range(N_slots))
+        print 'Start building fillbucket matrix'
         for ii in xrange(N_acq):
-            self.flag_filled.append(np.array(map(lambda x: x in self.fillbuck[ii], range(3564))))
+           self.flag_filled[ii,:] = map(lambda x: x in self.fillbuck[ii],array_slots) 
+        print 'Done'
 
 
     def nearest_older_sample(self, t_obs):
@@ -67,13 +81,13 @@ class blength:
 
 
         if isinstance(timber_variable_filled_bucket,tm.timber_variable_list):
-            fillbuck_obj = filled_buckets(timber_variable_filled_bucket)
+            fillbuck_obj = filled_buckets(timber_variable_filled_bucket, beam=beam)
         elif type(timber_variable_filled_bucket) is str:
             if not (beam == 1 or beam == 2):
                 raise ValueError('You need to specify which beam! (1 or 2)')
             dict_timber = tm.parse_timber_file(timber_variable_filled_bucket, verbose=True)
             timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
-            fillbuck_obj = filled_buckets(timber_variable_filled_bucket)
+            fillbuck_obj = filled_buckets(timber_variable_filled_bucket, beam = beam)
         elif isinstance(timber_variable_filled_bucket, filled_buckets):
             fillbuck_obj = timber_variable_filled_bucket
         elif timber_variable_filled_bucket == None:
