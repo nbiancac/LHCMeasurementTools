@@ -28,6 +28,8 @@ class timber_variable_list:
 		self.t_stamps = []
 		self.ms = []
 		self.values = []
+	def float_values(self):
+		return np.squeeze(np.float_(self.values))
 
 def parse_timber_file(timber_filename, verbose=True):
 

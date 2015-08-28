@@ -59,7 +59,14 @@ class Phase:
                 return 0.*self.power_loss[ind_min]
             else:	
                 return self.power_loss[ind_min]
-
+	
+	#~ @property #never tested, so I comment it out (Gianni)
+	#~ def total_power_loss(self):
+		#~ try:
+			#~ tot = np.sum(self.power_loss, axis=1)
+		#~ except NameError:
+			#~ raise NameError ('power_loss not there!\nPlease run "stick_power_loss"')
+		#~ return tot
 
 def parse_csv_file(filename):
 
@@ -80,6 +87,7 @@ def parse_csv_file(filename):
 
     while i_ln < N_lines:
         line = csv_lines[i_ln]
+        line = line.replace('--', '0.')
         line = line.split('\r\n')[0]
         line_obj = csv_data_line(line)
         (phase.t_stamps).append(line_obj.timestamp) 
@@ -99,4 +107,53 @@ class csv_data_line():
         t_string = list_values[0]
         self.timestamp = tm.timb_timestamp2float(t_string.split('.')[0])
         self.data_strings = list_values[1:]
+        
+class PowerLoss:
+    def __init__(self, timber_variable):
+
+        if type(timber_variable) is str:
+            dict_timber = parse_csv_file(timber_variable) 
+
+        elif type(timber_variable) is dict:
+            dict_timber = timber_variable
+
+        timber_variable_ploss = dict_timber['PHASE']  #abusing a bit the csv_parser
+        timber_variable_bunches = dict_timber['BUNCHES']
+        
+        self.t_stamps = np.float_(np.array(timber_variable_ploss.t_stamps)) 
+        values_raw = np.float_(np.array(timber_variable_ploss.values)) 
+        bunches_raw = np.float_(np.array(timber_variable_bunches.values)) 
+        
+        if len(bunches_raw) == (values_raw.shape[1]+1):
+            print 'WARNING: first bunch seems not to be there! I remove it from the bunch list.'
+            bunches_raw = bunches_raw[1:]
+
+        # create variables with all bunch slots
+        nslots = 3564
+        self.bunches = np.arange(nslots)
+        self.power_loss = np.zeros((len(self.t_stamps), nslots))
+        for ii in xrange(len(bunches_raw)):
+            bunch = bunches_raw[ii]
+            self.power_loss[:,bunch-1] = values_raw[:,ii] 
+
+   
+
+    def nearest_older_sample_power_loss(self, t_obs, flag_return_time=False):
+        ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
+        if self.t_stamps[ind_min] > t_obs:
+            ind_min -= 1
+        if flag_return_time:	
+            if ind_min == -1:
+                return 0.*self.power_loss[ind_min], -1
+            else:	
+                return self.power_loss[ind_min], self.t_stamps[ind_min]
+        else:
+            if ind_min == -1:
+                return 0.*self.power_loss[ind_min]
+            else:	
+                return self.power_loss[ind_min]
+	
+    @property
+    def total_power_loss(self):
+		return np.sum(self.power_loss, axis=1)
 		
