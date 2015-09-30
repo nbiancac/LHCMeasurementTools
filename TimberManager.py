@@ -64,7 +64,7 @@ def parse_timber_file(timber_filename, verbose=True):
 			except ValueError:
 				if 'Timestamp (UTC_TIME)' in line:
 					time_input_UTC = True
-					print 'Set time to UTC'
+					if verbose: print 'Set time to UTC'
 				if verbose:
 					print 'Skipped line: '+	line
 					

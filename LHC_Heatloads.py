@@ -68,3 +68,138 @@ variable_lists_heatloads['special_HC_D2'] = 'QRLAA_13L5_QBS943_D2.POSST QRLAA_13
 variable_lists_heatloads['special_HC_D3'] = 'QRLAA_13L5_QBS943_D3.POSST QRLAA_13R4_QBS947_D3.POSST QRLAA_33L5_QBS947_D3.POSST'.split()
 variable_lists_heatloads['special_HC_D4'] = 'QRLAA_13R4_QBS947_D4.POSST QRLAA_33L5_QBS947_D4.POSST QRLAA_13L5_QBS943_D4.POSST'.split()
 variable_lists_heatloads['special_total'] = 'QRLAA_13R4_QBS947.POSST QRLAA_33L5_QBS947.POSST QRLAA_13L5_QBS943.POSST'.split()
+
+def groups_dict():
+    dict_hl_groups = {}
+    dict_hl_groups['InnerTriplets'] = variable_lists_heatloads['IT_IR1']+variable_lists_heatloads['IT_IR5']+\
+        variable_lists_heatloads['IT_IR2']+variable_lists_heatloads['IT_IR8']
+    dict_hl_groups['Arcs'] = variable_lists_heatloads['AVG_ARC']
+    dict_hl_groups['Q5s'] = variable_lists_heatloads['Q5s_IR1']+variable_lists_heatloads['Q5s_IR5']+\
+        variable_lists_heatloads['Q5s_IR2']+variable_lists_heatloads['Q5s_IR8']
+    dict_hl_groups['Q6s'] = variable_lists_heatloads['Q6s_IR1']+variable_lists_heatloads['Q6s_IR5']+\
+        variable_lists_heatloads['Q6s_IR2']+variable_lists_heatloads['Q6s_IR8']
+    dict_hl_groups['Q4D2s'] =  variable_lists_heatloads['Q4D2s_IR1']+ variable_lists_heatloads['Q4D2s_IR5']+\
+        variable_lists_heatloads['Q4D2s_IR2']+ variable_lists_heatloads['Q4D2s_IR8']
+
+    dict_hl_groups['special_HC_Q1']	= variable_lists_heatloads['special_HC_Q1']
+    dict_hl_groups['special_HC_dipoles'] = variable_lists_heatloads['special_HC_D2']+\
+        variable_lists_heatloads['special_HC_D3']+variable_lists_heatloads['special_HC_D4']
+#    dict_hl_groups['special_HC_total'] = variable_lists_heatloads['special_total']
+
+    return dict_hl_groups
+
+
+cryogenic_length = {}
+
+cryogenic_length['AVG_ARC'] = [53.45]
+
+cryogenic_length['Q4D2s_IR1'] = [19.4]
+cryogenic_length['Q4D2s_IR5'] = [19.4]
+cryogenic_length['Q4D2s_IR2'] = [22.8]
+cryogenic_length['Q4D2s_IR8'] = [22.8]
+
+cryogenic_length['Q6s_IR1'] = [8.2]
+cryogenic_length['Q6s_IR5'] = [8.2]
+cryogenic_length['Q6s_IR2'] = [12.]
+cryogenic_length['Q6s_IR8'] = [12.]
+
+cryogenic_length['Q5s_IR1'] = [8.2]
+cryogenic_length['Q5s_IR5'] = [8.2]
+cryogenic_length['Q5s_IR2'] = [13.]
+cryogenic_length['Q5s_IR8'] = [13.]
+
+cryogenic_length['IT_IR1'] = [40.]
+cryogenic_length['IT_IR5'] = [40.]
+cryogenic_length['IT_IR2'] = [50.]
+cryogenic_length['IT_IR8'] = [50.]
+
+cryogenic_length['special_HC_Q1'] = [3.1]
+cryogenic_length['special_HC_D2'] = [14.3]
+cryogenic_length['special_HC_D3'] = [14.3]
+cryogenic_length['special_HC_D4'] = [14.3]
+cryogenic_length['special_total'] = [53.45]
+
+
+magnet_length = {}
+
+magnet_length['AVG_ARC'] = [53.45]
+
+magnet_length['Q4D2s_IR1'] = [18.08]
+magnet_length['Q4D2s_IR5'] = [18.08]
+magnet_length['Q4D2s_IR2'] = [21.39]
+magnet_length['Q4D2s_IR8'] = [21.39]
+
+magnet_length['Q6s_IR1'] = [4.8]
+magnet_length['Q6s_IR5'] = [4.8]
+magnet_length['Q6s_IR2'] = [8.567]
+magnet_length['Q6s_IR8'] = [8.567]
+
+magnet_length['Q5s_IR1'] = [4.8]
+magnet_length['Q5s_IR5'] = [4.8]
+magnet_length['Q5s_IR2'] = [7.181]
+magnet_length['Q5s_IR8'] = [7.181]
+
+magnet_length['IT_IR1'] = [36.98]
+magnet_length['IT_IR5'] = [36.96]
+magnet_length['IT_IR2'] = [44.91]
+magnet_length['IT_IR8'] = [44.91]
+
+magnet_length['special_HC_Q1'] = [3.1]
+magnet_length['special_HC_D2'] = [14.3]
+magnet_length['special_HC_D3'] = [14.3]
+magnet_length['special_HC_D4'] = [14.3]
+magnet_length['special_total'] = [53.45]
+
+
+def groups_length_dict(length='cryogenic_length'):
+
+    name_dict = variable_lists_heatloads
+
+    if length == 'magnet_length':
+        len_dict = magnet_length
+    elif length == 'cryogenic_length':
+        len_dict = cryogenic_length
+
+    dict_len_groups = {}
+
+    dict_len_groups['InnerTriplets'] = []
+    dict_len_groups['Arcs'] = []
+    dict_len_groups['Q5s'] = []
+    dict_len_groups['Q6s'] = []
+    dict_len_groups['Q4D2s'] = []
+    dict_len_groups['special_HC_Q1'] = []
+    dict_len_groups['special_HC_dipoles'] = [] 
+    dict_len_groups['special_HC_total'] = []
+
+
+    dict_len_groups['InnerTriplets'].extend(len_dict['IT_IR1']*len(name_dict['IT_IR1']))
+    dict_len_groups['InnerTriplets'].extend(len_dict['IT_IR5']*len(name_dict['IT_IR5']))
+    dict_len_groups['InnerTriplets'].extend(len_dict['IT_IR2']*len(name_dict['IT_IR2']))
+    dict_len_groups['InnerTriplets'].extend(len_dict['IT_IR8']*len(name_dict['IT_IR8']))
+
+    dict_len_groups['Arcs'].extend(len_dict['AVG_ARC']*len(name_dict['AVG_ARC']))
+
+    dict_len_groups['Q5s'].extend(len_dict['Q5s_IR1']*len(name_dict['Q5s_IR1']))
+    dict_len_groups['Q5s'].extend(len_dict['Q5s_IR5']*len(name_dict['Q5s_IR5']))
+    dict_len_groups['Q5s'].extend(len_dict['Q5s_IR2']*len(name_dict['Q5s_IR2']))
+    dict_len_groups['Q5s'].extend(len_dict['Q5s_IR8']*len(name_dict['Q5s_IR8']))
+
+    dict_len_groups['Q6s'].extend(len_dict['Q6s_IR1']*len(name_dict['Q6s_IR1']))
+    dict_len_groups['Q6s'].extend(len_dict['Q6s_IR5']*len(name_dict['Q6s_IR5']))
+    dict_len_groups['Q6s'].extend(len_dict['Q6s_IR2']*len(name_dict['Q6s_IR2']))
+    dict_len_groups['Q6s'].extend(len_dict['Q6s_IR8']*len(name_dict['Q6s_IR8']))
+
+    dict_len_groups['Q4D2s'].extend(len_dict['Q4D2s_IR1']*len(name_dict['Q4D2s_IR1']))
+    dict_len_groups['Q4D2s'].extend(len_dict['Q4D2s_IR5']*len(name_dict['Q4D2s_IR5']))
+    dict_len_groups['Q4D2s'].extend(len_dict['Q4D2s_IR2']*len(name_dict['Q4D2s_IR2']))
+    dict_len_groups['Q4D2s'].extend(len_dict['Q4D2s_IR8']*len(name_dict['Q4D2s_IR8']))
+
+    dict_len_groups['special_HC_Q1'].extend(len_dict['special_HC_Q1']*len(name_dict['special_HC_Q1']))
+    dict_len_groups['special_HC_dipoles'].extend(len_dict['special_HC_D2']*len(name_dict['special_HC_D2']))
+    dict_len_groups['special_HC_dipoles'].extend(len_dict['special_HC_D3']*len(name_dict['special_HC_D3']))
+    dict_len_groups['special_HC_dipoles'].extend(len_dict['special_HC_D4']*len(name_dict['special_HC_D4']))
+
+#    dict_len_groups['special_HC_total'].extend(len_dict['special_total']*len(name_dict['special_total']))
+
+    return dict_len_groups
+

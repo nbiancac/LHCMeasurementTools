@@ -137,16 +137,16 @@ class Masked:
 def emittance_dictionary():
     e_dict = {'betaf_h':{}, 'betaf_v':{}, 'gamma':{}, 
               'sigma_corr_h':{}, 'sigma_corr_v':{}}
-    e_dict['betaf_h'][450] = {1:203.47, 2:200.73}
-    e_dict['betaf_v'][450] = {1:317.45, 2:327.75}
-    e_dict['betaf_h'][6500] = {1:201.11, 2:197.81}
-    e_dict['betaf_v'][6500] = {1:324.13, 2:339.49}
+    e_dict['betaf_h'][450] = {1:205.5, 2:191.5}
+    e_dict['betaf_v'][450] = {1:320., 2:387.8}
+    e_dict['betaf_h'][6500] = {1:204.1, 2:191.5}
+    e_dict['betaf_v'][6500] = {1:322.7, 2:395.}
     e_dict['gamma'][450] = 479.6 
     e_dict['gamma'][6500] = 6927.6
-    e_dict['sigma_corr_h'][450] = 0.85
-    e_dict['sigma_corr_v'][450] = 0.87
-    e_dict['sigma_corr_h'][6500] = 0.2 #0.35
-    e_dict['sigma_corr_v'][6500] = 0.2 #0.33
+    e_dict['sigma_corr_h'][450] = 0.#0.85
+    e_dict['sigma_corr_v'][450] = 0.#0.87
+    e_dict['sigma_corr_h'][6500] = 0.#0.2 #0.35
+    e_dict['sigma_corr_v'][6500] = 0.#0.2 #0.33
 
     return e_dict
 
