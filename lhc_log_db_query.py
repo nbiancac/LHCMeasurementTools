@@ -28,7 +28,7 @@ def dbquery(varlist, t_start, t_stop, filename):
 	
         currpath = os.path.abspath('.')
 
-	execut = 'java -jar %s/accsoft-cals-extractor-client-nodep.jar '%(currpath+'/LHCMeasurementTools')
+	execut = 'java -jar %s/accsoft-cals-extr-client-nodep.jar '%(currpath+'/LHCMeasurementTools')
 	config = ' -C %s/ldb_UTC.conf '%(currpath+'/LHCMeasurementTools')
 	time_interval = ' -t1 "'+ t_start_str_UTC +'" -t2 "'+t_stop_str_UTC+'"' 
 	variables = '-vs "%s"'%(varlist_str)

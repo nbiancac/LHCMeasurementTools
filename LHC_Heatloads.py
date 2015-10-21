@@ -38,6 +38,12 @@ def sector_list():
     return sector_list
 
 
+def arc_average_correction_factors():
+    corr_factors = [1.3, 1.24, 1.22, 1.28, 1.26, 1.22, 1.24, 1.3]
+
+    return corr_factors
+
+
 average_arcs_variable_list = variable_list
 variable_lists_heatloads = {}
 
