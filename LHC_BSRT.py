@@ -67,8 +67,8 @@ class BSRT:
                 self.norm_emit_v.append(norm_emit_v)
                 continue
 
-            sigma_h_corr_sq = self.sigma_h[ii]**2 - e_dict['sigma_corr_h'][energy]**2
-            sigma_v_corr_sq = self.sigma_v[ii]**2 - e_dict['sigma_corr_v'][energy]**2
+            sigma_h_corr_sq = self.sigma_h[ii]**2 - e_dict['sigma_corr_h'][energy][self.beam]**2
+            sigma_v_corr_sq = self.sigma_v[ii]**2 - e_dict['sigma_corr_v'][energy][self.beam]**2
 
             phys_emit_h = sigma_h_corr_sq/e_dict['betaf_h'][energy][self.beam]
             phys_emit_v = sigma_v_corr_sq/e_dict['betaf_v'][energy][self.beam]
@@ -143,10 +143,10 @@ def emittance_dictionary():
     e_dict['betaf_v'][6500] = {1:322.7, 2:395.}
     e_dict['gamma'][450] = 479.6 
     e_dict['gamma'][6500] = 6927.6
-    e_dict['sigma_corr_h'][450] = 0.#0.85
-    e_dict['sigma_corr_v'][450] = 0.#0.87
-    e_dict['sigma_corr_h'][6500] = 0.#0.2 #0.35
-    e_dict['sigma_corr_v'][6500] = 0.#0.2 #0.33
+    e_dict['sigma_corr_h'][450] = {1:0.,2:0.}#0.85
+    e_dict['sigma_corr_v'][450] = {1:0., 2:0.}#0.87
+    e_dict['sigma_corr_h'][6500] = {1:0.32, 2:0.34}#0.2 #0.35
+    e_dict['sigma_corr_v'][6500] = {1:0.23, 2:0.28}#0.#0.2 #0.33
 
     return e_dict
 
