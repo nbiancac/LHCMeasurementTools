@@ -209,3 +209,30 @@ def groups_length_dict(length='cryogenic_length'):
 
     return dict_len_groups
 
+
+def sector_all_variables(sectors):
+    sectors = np.array(sectors, ndmin=1)
+    
+    sector_variable_list = []
+    for sector in sectors:
+        sector_R = str(sector)[0]
+        sector_L = str(sector)[1]
+
+        variable_list_R = ['QRLBA_09R','QRLAB_11R','QRLAA_13R','QRLAB_15R','QRLAA_17R','QRLAB_19R','QRLAA_21R',
+                           'QRLAB_23R','QRLAA_25R','QRLAB_27R','QRLAA_29R','QRLAC_31R','QRLAD_33R']
+        variable_list_L = ['QRLAA_33L','QRLAB_31L','QRLAA_29L','QRLAB_27L','QRLAA_25L','QRLAB_23L','QRLAA_21L',
+                           'QRLAB_19L','QRLAA_17L','QRLAB_15L','QRLAA_13L','QRLAB_11L','QRLBA_09L', 
+                           'QRLBB_09L','QRLAH_11L','QRLAG_13L','QRLAH_15L','QRLAG_17L','QRLAF_25L','QRLAE_25L']#this line is for special cases
+    
+        for variable in variable_list_R:
+            for nqbs in [943,947]:
+                curr_variable = variable+'%s_QBS%d.POSST'%(sector_R, nqbs)
+                sector_variable_list.append(curr_variable)
+        for variable in variable_list_L:
+            for nqbs in [947,943]:
+                curr_variable = variable+'%s_QBS%d.POSST'%(sector_L, nqbs)
+                sector_variable_list.append(curr_variable)
+
+    return sector_variable_list
+
+
