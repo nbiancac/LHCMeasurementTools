@@ -70,6 +70,23 @@ def parse_timber_file(timber_filename, verbose=True):
 					
 	return variables
 	
+def timber_variables_from_h5(filename):
+	import h5py
+	dict_data = {}
+	with h5py.File(filename, 'r') as fid:
+		for kk in fid.keys():
+			varname = kk.split('!')[0]
+			part = kk.split('!')[1]
+			if varname not in dict_data:
+				dict_data[str(varname)] = timber_variable_list()
+			if part=='t_stamps':
+				dict_data[varname].t_stamps =  np.atleast_1d(fid[kk][:])
+			elif part=='values':
+				dict_data[varname].values =  list(np.atleast_2d(fid[kk][:]))
+			
+	return dict_data
+
+	
 	
 
 

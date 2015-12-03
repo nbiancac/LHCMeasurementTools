@@ -1,5 +1,6 @@
 import numpy as np
 import TimberManager as tm
+from scipy.interpolate import interp1d
 
 class BCT(object):
     def __init__(self, timber_variable, beam=0):
@@ -14,6 +15,7 @@ class BCT(object):
 
         self.t_stamps = np.float_(np.array(timber_variable_BCT.t_stamps))
         self.values = np.squeeze(np.float_(np.array(timber_variable_BCT.values)))
+        self.interp = interp1d(self.t_stamps, self.values, bounds_error=False)
 
     def nearest_older_sample(self, t_obs, flag_return_time=False):
         ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
