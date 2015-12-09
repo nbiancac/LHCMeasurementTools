@@ -1,5 +1,6 @@
 import numpy as np
 import TimberManager as tm
+from scipy.interpolate import interp1d
 
 class energy:
     def __init__(self, timber_variable, beam=0):
@@ -17,6 +18,7 @@ class energy:
 	
         self.t_stamps = np.array(self.t_stamps)
         self.energy = np.array(self.energy)
+        self.interp = interp1d(self.t_stamps, self.energy, bounds_error=False)
 		
     def nearest_older_sample(self, t_obs):
         ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
