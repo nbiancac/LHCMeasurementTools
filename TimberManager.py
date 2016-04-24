@@ -27,6 +27,7 @@ class timber_variable_list:
 	def __init__(self):
 		self.t_stamps = []
 		self.ms = []
+		self.t_str=[]
 		self.values = []
 	def float_values(self):
 		return np.squeeze(np.float_(self.values))
@@ -90,7 +91,7 @@ def timber_variables_from_h5(filename):
 	
 
 
-def dbquery(varlist, t_start, t_stop, filename):
+def dbquery(varlist, t_start, t_stop,step=None,filename='dummy'):
 	
 	if type(t_start) is not str:
 		t_start_str_UTC = UnixTimeStamp2UTCTimberTimeString(t_start)
@@ -112,13 +113,19 @@ def dbquery(varlist, t_start, t_stop, filename):
 		varlist_str += var +','
 	varlist_str = varlist_str[:-1]
 	
+	if step:
+		NI,IT=step.split()
+		if IT in ['SECOND','MINUTE', 'HOUR','WEEK','MONTH','YEAR']:
+			step_interval=' -IT "'+IT+'" -NI "'+NI+'" '
+	else:
+		step_interval=''
 	execut = 'java -jar accsoft-cals-extractor-client-nodep.jar '
-	config = ' -C ldb_UTC.conf '
+	config = ' -C mdb_UTC.conf '
 	time_interval = ' -t1 "'+ t_start_str_UTC +'" -t2 "'+ t_stop_str_UTC +'"' 
 	variables = '-vs "%s"'%(varlist_str)
 	outpfile = ' -N .//' + filename
 
-	command = execut + config + variables + time_interval + outpfile
+	command = execut + config + variables + time_interval + step_interval + outpfile 
 
 	print command
 	
