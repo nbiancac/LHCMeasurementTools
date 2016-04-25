@@ -72,7 +72,7 @@ class BBQ_FFT(object):
         self.t_stamps = np.ravel(np.squeeze(np.array(dict_timber['LHC.BQBBQ.CONTINUOUS_HS.B{:d}:EIGEN_FREQ_1'.format(beam)][0])))
         self.t_str=[datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))]
         
-class BBQ_RAW(object):
+class BBQHS_RAW(object):
 
     def __init__(self, timber_variable_bbq, beam=0):
 
@@ -85,11 +85,8 @@ class BBQ_RAW(object):
         
         self.beam = beam
         
-        self.gated_h  = dict_timber['LHC.BQBBQ.CONTINUOUS.B{:d}:ACQ_DATA_H'.format(beam)][1]
-        self.gated_v  = dict_timber['LHC.BQBBQ.CONTINUOUS.B{:d}:ACQ_DATA_V'.format(beam)][1]
-        
-        self.HS_h  = dict_timber['LHC.BQBBQ.CONTINUOUS_HS.B{:d}:ACQ_DATA_H'.format(beam)][1]
-        self.HS_v  = dict_timber['LHC.BQBBQ.CONTINUOUS_HS.B{:d}:ACQ_DATA_V'.format(beam)][1]
+        self.h  = dict_timber['LHC.BQBBQ.CONTINUOUS_HS.B{:d}:ACQ_DATA_H'.format(beam)][1]
+        self.v  = dict_timber['LHC.BQBBQ.CONTINUOUS_HS.B{:d}:ACQ_DATA_V'.format(beam)][1]
         
         self.amph = np.array([]);
         self.ampv = np.array([]);
@@ -116,7 +113,50 @@ class BBQ_RAW(object):
                     setattr(self,el,new_values)
         
         self.t_str=[datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))]
+
+class BBQG_RAW(object):
+
+    def __init__(self, timber_variable_bbq, beam=0):
+
+        if not (beam == 1 or beam == 2):
+            raise ValueError('You need to specify which beam! (1 or 2)')
+        
+
+        if type(timber_variable_bbq) is dict:
+            dict_timber = timber_variable_bbq
+        
+        self.beam = beam
+        
+        self.h  = dict_timber['LHC.BQBBQ.CONTINUOUS.B{:d}:ACQ_DATA_H'.format(beam)][1]
+        self.v  = dict_timber['LHC.BQBBQ.CONTINUOUS.B{:d}:ACQ_DATA_V'.format(beam)][1]
+        
+        self.amph = np.array([]);
+        self.ampv = np.array([]);
+        
+        self.qh = np.array([]);
+        self.qv = np.array([]);
+        
+        self.t_stamps = np.ravel(np.squeeze(np.array(dict_timber['LHC.BQBBQ.CONTINUOUS.B{:d}:ACQ_DATA_H'.format(beam)][0])))
+        self.t_str=[datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))]
+        
+    def interp_with(self, obj):
+        
+        old_t_stamps=self.t_stamps
+        new_t_stamps=np.sort(np.unique(np.append(old_t_stamps,obj.t_stamps)))
+        
+        for el in vars(self):
     
+            if type(getattr(self,el)) in [np.ndarray]:
+                
+                if len(np.shape(getattr(self,el)))==1 & (len(getattr(self,el))>0):
+                
+                    new_values=np.interp(new_t_stamps,old_t_stamps, getattr(self,el))
+
+                    setattr(self,el,new_values)
+        
+        self.t_str=[datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))]
+        
+        
 def get_variable_dict(beam):
     var_dict = {}
     var_dict['BBQ_HS_AMPL_1'] = 'LHC.BQBBQ.CONTINUOUS_HS.B{:d}:EIGEN_AMPL_1'.format(beam)
