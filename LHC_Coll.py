@@ -20,11 +20,8 @@ class Coll(object):
         
         
         old_t_stamps=self.t_stamps
-        print np.shape(old_t_stamps)
-        
-        new_t_stamps=np.sort(np.unique(np.append(old_t_stamps,obj.t_stamps)))
-        print np.shape(new_t_stamps)
-        
+        new_t_stamps=obj.t_stamps
+    
         for el in vars(self):
     
             if type(getattr(self,el)) in [np.ndarray]:
