@@ -1,5 +1,6 @@
 import numpy as np
 import TimberManager as tm
+import datetime 
 
 class BSRT:
     def __init__(self, timber_variable_bsrt, beam=0):
@@ -17,9 +18,9 @@ class BSRT:
         sigma_v = dict_timber[get_variable_dict(beam)['SIGMA_V']]
         gate = dict_timber[get_variable_dict(beam)['GATE_DELAY']]
 
-        if (sigma_h.t_stamps != sigma_v.t_stamps):
+        if np.all(sigma_h.t_stamps != sigma_v.t_stamps):
             raise Warning('Timestamps for the two channels (H and V) not equal!')
-        if (sigma_v.t_stamps != gate.t_stamps):
+        if np.all(sigma_v.t_stamps != gate.t_stamps):
             bunches_effectively_recorded = self.get_bunches_effectively_recorded(gate, sigma_v)             
         else:
             bunches_effectively_recorded = gate 
@@ -44,7 +45,7 @@ class BSRT:
         self.bunch_n = np.array(self.bunch_n)
         self.sigma_h = np.array(self.sigma_h)
         self.sigma_v = np.array(self.sigma_v)
-
+        self.t_str=[datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))]
 
     def calculate_emittances(self, energy_ob):
         e_dict = emittance_dictionary()
@@ -125,6 +126,7 @@ class Masked:
         
         self.beam = bsrt.beam
         self.t_stamps = bsrt.t_stamps[mask_bsrt]
+        self.t_str = bsrt.t_str[mask_bsrt]
         self.bunch_n = bsrt.bunch_n[mask_bsrt]
         self.sigma_h = bsrt.sigma_h[mask_bsrt]
         self.sigma_v = bsrt.sigma_v[mask_bsrt]

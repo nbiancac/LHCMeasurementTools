@@ -1,6 +1,6 @@
 import numpy as np
 import TimberManager as tm
-
+import datetime 
 class FBCT:
     def __init__(self, timber_variable, beam=0, device='A'):
 
@@ -12,8 +12,8 @@ class FBCT:
         elif type(timber_variable) is dict:
             timber_variable_FBCT = timber_variable[get_variable_dict(beam)['BUNCH_INTENSITY_' + device]]            
 
-        self.t_stamps = timber_variable_FBCT.t_stamps
-        self.bint = timber_variable_FBCT.values
+        self.t_stamps = timber_variable_FBCT[0]
+        self.bint = timber_variable_FBCT[1]
 
         # self.bint = map(lambda x: np.array(map(float, x)), self.bint)
         # self.bint = np.array(self.bint)
@@ -22,7 +22,9 @@ class FBCT:
 
         self.bint = np.array(np.float_(self.bint))
         self.t_stamps = np.array(np.float_(self.t_stamps))
+        self.t_str=[datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))]
         self.totint = np.sum(self.bint, axis = 1)
+        
 
 
     def uniform_time(self, t_inter=60.):

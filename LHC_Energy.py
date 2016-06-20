@@ -12,8 +12,8 @@ class energy:
         elif type(timber_variable) is dict:
             timber_variable_energy = timber_variable[get_variable_dict(beam)['ENERGY']]
 
-        self.t_stamps = timber_variable_energy.t_stamps
-        self.energy = np.atleast_1d(np.squeeze(timber_variable_energy.float_values()))
+        self.t_stamps = timber_variable_energy[0]
+        self.energy = np.atleast_1d(np.squeeze(timber_variable_energy[1]))
         #self.energy = map(lambda x: float(x[0]), self.energy)
 	
         self.t_stamps = np.array(self.t_stamps)
