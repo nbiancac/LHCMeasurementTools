@@ -191,4 +191,4 @@ def variable_list_RAW(beams = [1,2]):
         'LHC.BQBBQ.CONTINUOUS.B%d:ACQ_DATA_V'%beam,
         'LHC.BQBBQ.CONTINUOUS_HS.B%d:ACQ_DATA_H'%beam,
         'LHC.BQBBQ.CONTINUOUS_HS.B%d:ACQ_DATA_V'%beam]
-	return var_list
+    return var_list
