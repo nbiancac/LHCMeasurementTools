@@ -37,7 +37,7 @@ class BCT(object):
         
 def get_variable_dict(beam):
     var_dict = {}
-    var_dict['BEAM_INTENSITY'] = 'LHC.BCTDC.A6R4.B%d:BEAM_INTENSITY'%beam
+    var_dict['BEAM_INTENSITY'] = 'LHC.BCTFR.A6R4.B%d:BEAM_INTENSITY'%beam
 
     return var_dict
 

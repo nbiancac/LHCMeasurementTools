@@ -35,15 +35,14 @@ for ind,el in enumerate(a):
 # ts1 = time.time()-1*3600
 # ts2 = time.time()
 
-# ts1 = calendar.timegm(time.strptime("2016-07-29 04:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
-# ts2 = calendar.timegm(time.strptime("2016-07-29 07:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
+ts1 = calendar.timegm(time.strptime("2016-07-29 04:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
+ts2 = calendar.timegm(time.strptime("2016-07-29 07:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
 
 print 'ts1 = '+time.strftime("%b %d %Y %H:%M:%S", time.localtime(ts1))
 print 'ts2 = '+time.strftime("%b %d %Y %H:%M:%S", time.localtime(ts2))
 
-# segment BBQ every 5 minutes
 Nsegments = np.floor(ts2-ts1)/(60) 
-print 'Segmenting BBQ data in 1 minute: %d files'%Nsegments
+print 'Segmenting BBQ data in 10 seconds: %d files'%Nsegments
 
 
 # ### Getting data from Timber and stored in Pagestore
@@ -54,18 +53,12 @@ data=mdb.get(LHC_BCT.variable_list(beams=[1,2]),ts1,ts2)
 db.store(data)
 
 
-# BBQ
-#import LHC_BBQ
-#times=np.linspace(ts1,ts2,Nsegments)
-#for ii in np.arange(1,len(times)-1):
-#    data=mdb.get(LHC_BBQ.variable_list(beams=[1,2]),ts1,ts2)
-#    db.store(data)
-
 # BBQ RAW
 import LHC_BBQ
 times=np.linspace(ts1,ts2,Nsegments)
 for ii in np.arange(len(times)-1):
     print '%d/%d'%(ii,len(times)-2)
+    print time.strftime("%b %d %Y %H:%M:%S", time.localtime(times[ii]))
     data=mdb.get(LHC_BBQ.variable_list_RAW(beams=[1,2]),times[ii],times[ii+1])
     db.store(data)
     
