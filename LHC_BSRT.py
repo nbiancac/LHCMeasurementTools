@@ -1,6 +1,7 @@
+
 import numpy as np
 import TimberManager as tm
-import datetime 
+import datetime
 
 class BSRT:
     def __init__(self, timber_variable_bsrt, beam=0):
@@ -17,38 +18,38 @@ class BSRT:
         sigma_h = dict_timber[get_variable_dict(beam)['SIGMA_H']]
         sigma_v = dict_timber[get_variable_dict(beam)['SIGMA_V']]
         gate = dict_timber[get_variable_dict(beam)['GATE_DELAY']]
-
-        if np.all(sigma_h.t_stamps != sigma_v.t_stamps):
+        
+        if np.all(sigma_h[0] != sigma_v[0]):
             raise Warning('Timestamps for the two channels (H and V) not equal!')
-        if np.all(sigma_v.t_stamps != gate.t_stamps):
-            bunches_effectively_recorded = self.get_bunches_effectively_recorded(gate, sigma_v)             
+        if np.all(sigma_v[0] != gate[0]):
+            bunches_effectively_recorded = self.get_bunches_effectively_recorded(gate, sigma_v)
         else:
-            bunches_effectively_recorded = gate 
+            bunches_effectively_recorded = gate
 
         self.t_stamps = []
         self.bunch_n = []
         self.sigma_h = []
         self.sigma_v = []
-
-        for ii in xrange(len(bunches_effectively_recorded.t_stamps)):
+        
+        for ii in xrange(len(bunches_effectively_recorded[0])):
             if np.mod(ii,10000) == 0:
-		print 'expanding %.1f'%(float(ii)/len(bunches_effectively_recorded.t_stamps)*100) + """%"""	
-	
-            N_meas = len(bunches_effectively_recorded.values[ii])
+                print 'expanding %.1f'%(float(ii)/len(bunches_effectively_recorded[0])*100) + """%"""
+
+            N_meas = len(bunches_effectively_recorded[1][ii])
             for jj in xrange(N_meas):
-		self.bunch_n.append(np.float_(bunches_effectively_recorded.values[ii][jj]))
-		self.sigma_h.append(np.float_(sigma_h.values[ii][jj]))
-		self.sigma_v.append(np.float_(sigma_v.values[ii][jj]))
-		self.t_stamps.append(np.float_(sigma_v.t_stamps[ii]) + float(jj)*1e-3/float(N_meas))        
-             
+                self.bunch_n.append(np.float_(bunches_effectively_recorded[1][ii][jj]))
+                self.sigma_h.append(np.float_(sigma_h[1][ii][jj]))
+                self.sigma_v.append(np.float_(sigma_v[1][ii][jj]))
+                self.t_stamps.append(np.float_(sigma_v[0][ii]) + float(jj)*1e-3/float(N_meas))
+
         self.t_stamps = np.array(self.t_stamps)
         self.bunch_n = np.array(self.bunch_n)
         self.sigma_h = np.array(self.sigma_h)
         self.sigma_v = np.array(self.sigma_v)
-        self.t_str=[datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))]
-
-    def calculate_emittances(self, energy_ob):
-        e_dict = emittance_dictionary()
+        self.t_str=np.array([datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))])
+    
+    def calculate_emittances(self, energy_ob, filln):
+        e_dict = emittance_dictionary(filln)
         self.norm_emit_h = []
         self.norm_emit_v = []
         for ii in xrange(len(self.t_stamps)):
@@ -73,10 +74,10 @@ class BSRT:
 
             phys_emit_h = sigma_h_corr_sq/e_dict['betaf_h'][energy][self.beam]
             phys_emit_v = sigma_v_corr_sq/e_dict['betaf_v'][energy][self.beam]
-                
+
             norm_emit_h  = phys_emit_h*e_dict['gamma'][energy]
             norm_emit_v  = phys_emit_v*e_dict['gamma'][energy]
-            
+
             self.norm_emit_h.append(norm_emit_h)
             self.norm_emit_v.append(norm_emit_v)
 
@@ -90,7 +91,7 @@ class BSRT:
         ind_start_scan = ind_start_scan_all[np.diff(ind_start_scan_all) > 10]
         self.t_start_scans = self.t_stamps[ind_start_scan]
         self.t_start_scans = np.array(list(self.t_start_scans)+[self.t_stamps[-1]])
-        
+
         # return self.t_start_scans
 
 
@@ -103,27 +104,38 @@ class BSRT:
         t_stop = self.t_start_scans[ind_closest_scan + 1]
         return Masked(self, t_start, t_stop)
 
+    def get_bunches_effectively_recorded(self):
+        print 'cleaning ...'
+        ind_clean = np.where((self.bunch_n == 0 ) & (self.sigma_h == 0))[0]
+        self.bunch_n =     np.delete(self.bunch_n,ind_clean)
+        self.norm_emit_h = np.delete(self.norm_emit_h,ind_clean)
+        self.norm_emit_v = np.delete(self.norm_emit_v, ind_clean)
+        self.sigma_h =     np.delete(self.sigma_h,ind_clean) 
+        self.sigma_v =     np.delete(self.sigma_v,ind_clean)
+        self.t_stamps =    np.delete(self.t_stamps,ind_clean)
+        self.t_str =       np.delete(self.t_str,ind_clean) 
+        
+    
+#     def get_bunches_effectively_recorded(self, gate_timber, sigma_timber):
+#         recorded_bunches = tm.timber_variable_list()
+#         i1 = 0
+#         for i2 in xrange(len(gate_timber.t_stamps)):
+#             if np.mod(i2,10000) == 0:
+#                 print 'Cleaning %.1f'%(float(i2)/len(gate_timber.t_stamps)*100)+"""%"""
+#             if gate_timber.t_stamps[i2] == sigma_timber.t_stamps[i1]:
+#                 recorded_bunches.t_stamps.append(gate_timber.t_stamps[i2])
+#                 recorded_bunches.values.append(gate_timber.values[i2])
+#                 i1 += 1
 
-    def get_bunches_effectively_recorded(self, gate_timber, sigma_timber):
-        recorded_bunches = tm.timber_variable_list()
-        i1 = 0
-        for i2 in xrange(len(gate_timber.t_stamps)):
-            if np.mod(i2,10000) == 0:
-                print 'Cleaning %.1f'%(float(i2)/len(gate_timber.t_stamps)*100)+"""%"""
-            if gate_timber.t_stamps[i2] == sigma_timber.t_stamps[i1]:
-                recorded_bunches.t_stamps.append(gate_timber.t_stamps[i2])
-                recorded_bunches.values.append(gate_timber.values[i2])
-                i1 += 1
-         
-        return recorded_bunches
+#         return recorded_bunches
 
 
 class Masked:
     def __init__(self, bsrt, t_start, t_stop):
         self.t_start = t_start
         self.t_stop = t_stop
-        mask_bsrt = np.logical_and(bsrt.t_stamps >= self.t_start, bsrt.t_stamps < self.t_stop)            
-        
+        mask_bsrt = np.logical_and(bsrt.t_stamps >= self.t_start, bsrt.t_stamps < self.t_stop)
+
         self.beam = bsrt.beam
         self.t_stamps = bsrt.t_stamps[mask_bsrt]
         self.t_str = bsrt.t_str[mask_bsrt]
@@ -134,23 +146,72 @@ class Masked:
             self.norm_emit_h = bsrt.norm_emit_h[mask_bsrt]
             self.norm_emit_v = bsrt.norm_emit_v[mask_bsrt]
 
-
-
-def emittance_dictionary():
-    e_dict = {'betaf_h':{}, 'betaf_v':{}, 'gamma':{}, 
+def emittance_dictionary(filln):
+ e_dict = {'betaf_h':{}, 'betaf_v':{}, 'gamma':{},
               'sigma_corr_h':{}, 'sigma_corr_v':{}}
-    e_dict['betaf_h'][450] = {1:205.5, 2:191.5}
-    e_dict['betaf_v'][450] = {1:320., 2:387.8}
-    e_dict['betaf_h'][6500] = {1:204.1, 2:191.5}
-    e_dict['betaf_v'][6500] = {1:322.7, 2:395.}
-    e_dict['gamma'][450] = 479.6 
-    e_dict['gamma'][6500] = 6927.6
-    e_dict['sigma_corr_h'][450] = {1:0.,2:0.}#0.85
-    e_dict['sigma_corr_v'][450] = {1:0., 2:0.}#0.87
-    e_dict['sigma_corr_h'][6500] = {1:0.32, 2:0.34}#0.2 #0.35
-    e_dict['sigma_corr_v'][6500] = {1:0.23, 2:0.28}#0.#0.2 #0.33
+    
+ if filln<5256:
+        e_dict = {'betaf_h':{}, 'betaf_v':{}, 'gamma':{},
+                  'sigma_corr_h':{}, 'sigma_corr_v':{}}
+        for kk in e_dict.keys():
+            e_dict[kk] = {450:{}, 6500:{}}
 
-    return e_dict
+        # Beam 1:
+        e_dict['betaf_h'][450][1] = 204.1
+        e_dict['betaf_h'][6500][1] = 200.
+        e_dict['betaf_v'][450][1] = 317.3
+        e_dict['betaf_v'][6500][1] = 330.
+        e_dict['sigma_corr_h'][450][1] = 0.528
+        e_dict['sigma_corr_h'][6500][1] = 0.303
+        e_dict['sigma_corr_v'][450][1] = 0.437
+        e_dict['sigma_corr_v'][6500][1] = 0.294
+
+        # Beam 2:
+        e_dict['betaf_h'][450][2] = 200.6
+        e_dict['betaf_h'][6500][2] = 200.
+        e_dict['betaf_v'][450][2] = 327.1
+        e_dict['betaf_v'][6500][2] = 330.
+        e_dict['sigma_corr_h'][450][2] = 0.518
+        e_dict['sigma_corr_h'][6500][2] = 0.299
+        e_dict['sigma_corr_v'][450][2] = 0.675
+        e_dict['sigma_corr_v'][6500][2] = 0.299
+
+        # gamma
+        e_dict['gamma'][450] = 479.6
+        e_dict['gamma'][6500] = 6927.6
+       
+ else:
+        e_dict = {'betaf_h':{}, 'betaf_v':{}, 'gamma':{},
+                  'sigma_corr_h':{}, 'sigma_corr_v':{}}
+        for kk in e_dict.keys():
+            e_dict[kk] = {450:{}, 6500:{}}
+
+        # Beam 1:
+        e_dict['betaf_h'][450][1] = 204.1
+        e_dict['betaf_h'][6500][1] = 200.
+        e_dict['betaf_v'][450][1] = 317.3
+        e_dict['betaf_v'][6500][1] = 330.
+        e_dict['sigma_corr_h'][450][1] = .52
+        e_dict['sigma_corr_h'][6500][1] = .32
+        e_dict['sigma_corr_v'][450][1] = .68
+        e_dict['sigma_corr_v'][6500][1] = .34
+
+        # Beam 2:
+        e_dict['betaf_h'][450][2] = 200.6
+        e_dict['betaf_h'][6500][2] = 200.
+        e_dict['betaf_v'][450][2] = 327.1
+        e_dict['betaf_v'][6500][2] = 330.
+        e_dict['sigma_corr_h'][450][2] = .47
+        e_dict['sigma_corr_h'][6500][2] = .32
+        e_dict['sigma_corr_v'][450][2] = .64
+        e_dict['sigma_corr_v'][6500][2] = .3
+
+        # gamma
+        e_dict['gamma'][450] = 479.6
+        e_dict['gamma'][6500] = 6927.6
+
+
+ return e_dict
 
 
 def get_variable_dict(beam):
@@ -161,7 +222,6 @@ def get_variable_dict(beam):
     var_dict['SIGMA_V'] = 'LHC.BSRT.5%s4.B%d:FIT_SIGMA_V'%(beam_device_list[beam-1],beam)
 
     return var_dict
-
 
 def variable_list(beams = [1,2]):
     var_list = []

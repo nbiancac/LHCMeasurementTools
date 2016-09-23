@@ -14,29 +14,33 @@ import os
 import numpy as np
 
 
-filln=5130
+filln= 5313  #5312
 
 mdb=pytimber.LoggingDB(source='mdb')
+ldb = pytimber.LoggingDB(source='ldb')
 db=pagestore.PageStore('/home/nbiancac/HDD/Work/MD/LHC/DB/lhc.db','/home/nbiancac/HDD/Work/MD/LHC/DB/')    
 
-beamMode1 = 'RAMP'
+beamMode1 = 'INJPROT'
 beamMode2 = 'BEAMDUMP'
 
 a =mdb.getLHCFillData(fill_number=filln)['beamModes']
 for ind,el in enumerate(a):
     if el['mode'] == beamMode1:
-        ts1=mdb.getLHCFillData(fill_number=filln)['beamModes'][ind]['startTime']
-        print beamMode1+' startTime: %.1f'%ts1
+        ts1_fill=mdb.getLHCFillData(fill_number=filln)['beamModes'][ind]['startTime']
+        print beamMode1+' startTime: %.1f'%ts1_fill
         
 for ind,el in enumerate(a):
     if el['mode'] == beamMode2:
-        ts2=mdb.getLHCFillData(fill_number=filln)['beamModes'][ind]['startTime']
-        print beamMode2+' startTime: %.1f'%ts2
+        ts2_fill=mdb.getLHCFillData(fill_number=filln)['beamModes'][ind]['startTime']
+        print beamMode2+' startTime: %.1f'%ts2_fill
 # ts1 = time.time()-1*3600
 # ts2 = time.time()
 
-ts1 = calendar.timegm(time.strptime("2016-07-29 04:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
-ts2 = calendar.timegm(time.strptime("2016-07-29 07:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
+#ts1 = calendar.timegm(time.strptime("2016-09-19 15:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
+#ts2 = calendar.timegm(time.strptime("2016-09-19 16:30:00","%Y-%m-%d %H:%M:%S"))-2*3600
+
+ts1 = calendar.timegm(time.strptime("2016-09-19 20:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
+ts2 = calendar.timegm(time.strptime("2016-09-20 02:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
 
 print 'ts1 = '+time.strftime("%b %d %Y %H:%M:%S", time.localtime(ts1))
 print 'ts2 = '+time.strftime("%b %d %Y %H:%M:%S", time.localtime(ts2))
@@ -73,17 +77,15 @@ for ii in np.arange(len(times)-1):
 
 # BQM
 import LHC_BQM
-times=np.linspace(ts1,ts2,2*Nsegments)
-for ii in np.arange(len(times)-1):
-	data=mdb.get(LHC_BQM.variable_list(beams=[1,2]),ts1,ts2)
-	db.store(data)
+data=ldb.get(LHC_BQM.variable_list(beams=[1,2]),ts1_fill,ts2_fill)
+db.store(data)
 
 
 # FBCT
 import LHC_FBCT
-times=np.linspace(ts1,ts2,Nsegments)
+times=np.linspace(ts1,ts2,2*Nsegments)
 for ii in np.arange(len(times)-1):
-    data=mdb.get(LHC_FBCT.variable_list(beams=[1,2]),times[ii],times[ii+1])
+    data=ldb.get(LHC_FBCT.variable_list(beams=[1,2]),times[ii],times[ii+1])
     db.store(data)
 
 
@@ -101,3 +103,10 @@ db.store(data)
 data=mdb.get(LHC_Coll.variable_list(beam=2),ts1,ts2)
 db.store(data)
 
+
+# RP
+import LHC_RP
+data=ldb.get(LHC_RP.variable_list(beam=1),ts1,ts2)
+db.store(data)
+data=ldb.get(LHC_RP.variable_list(beam=2),ts1,ts2)
+db.store(data)

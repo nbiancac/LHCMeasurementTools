@@ -1,6 +1,6 @@
 import numpy as np
 import TimberManager as tm
-
+import datetime
 class filled_buckets:
     def __init__(self, timber_variable, beam=0):
 
@@ -15,12 +15,12 @@ class filled_buckets:
         elif isinstance(timber_variable, tm.timber_variable_list):
             timber_variable_filled = timber_variable
         else:
-			print 'Whaaaat?????'
+            print 'Whaaaat?????'
             
             
                        
-        self.t_stamps = np.array(timber_variable_filled.t_stamps)
-        self.fillbuck = timber_variable_filled.values
+        self.t_stamps = np.array(timber_variable_filled[0])
+        self.fillbuck = timber_variable_filled[1]
         self.fillbuck = map(lambda x: np.array(map(lambda y: int(float(y)), x)), self.fillbuck)
         self.fillbuck = map(lambda x: (x-1)/10, self.fillbuck)
         self.fillbuck = map(lambda x: x[x>=0], self.fillbuck)
@@ -36,7 +36,7 @@ class filled_buckets:
         array_slots = np.array(range(N_slots))
         print 'Start building fillbucket matrix'
         for ii in xrange(N_acq):
-           self.flag_filled[ii,:] = map(lambda x: x in self.fillbuck[ii],array_slots) 
+            self.flag_filled[ii,:] = map(lambda x: x in self.fillbuck[ii],array_slots) 
         print 'Done'
 
 
@@ -65,39 +65,22 @@ class filled_buckets:
 class blength:
     def __init__(self,timber_variable_blength, timber_variable_filled_bucket=None, beam=0):
 
-        if type(timber_variable_blength) is str:
-            if not (beam == 1 or beam == 2):
-                raise ValueError('You need to specify which beam! (1 or 2)')
-            dict_timber = tm.parse_timber_file(timber_variable_blength, verbose=True)
-            timber_variable_blength = dict_timber[get_variable_dict(beam)['BUNCH_LENGTH']]
-            if timber_variable_filled_bucket == None:
-                timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
 
-        elif type(timber_variable_blength) is dict:
+        if type(timber_variable_blength) is dict:
             dict_timber = timber_variable_blength
             timber_variable_blength = dict_timber[get_variable_dict(beam)['BUNCH_LENGTH']]
             if timber_variable_filled_bucket == None:
                 timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
 
 
-        if isinstance(timber_variable_filled_bucket,tm.timber_variable_list):
-            fillbuck_obj = filled_buckets(timber_variable_filled_bucket, beam=beam)
-        elif type(timber_variable_filled_bucket) is str:
-            if not (beam == 1 or beam == 2):
-                raise ValueError('You need to specify which beam! (1 or 2)')
-            dict_timber = tm.parse_timber_file(timber_variable_filled_bucket, verbose=True)
-            timber_variable_filled_bucket = dict_timber[get_variable_dict(beam)['FILLED_BUCKETS']]
-            fillbuck_obj = filled_buckets(timber_variable_filled_bucket, beam = beam)
-        elif isinstance(timber_variable_filled_bucket, filled_buckets):
-            fillbuck_obj = timber_variable_filled_bucket
-        elif timber_variable_filled_bucket == None:
-            raise TypeError('You need to provide a filled_bucket file or object!')
 
-        self.t_stamps = timber_variable_blength.t_stamps
+        fillbuck_obj = filled_buckets(dict_timber, beam = beam)
+
+        self.t_stamps = timber_variable_blength[0]
         self.blen = []
-        blen_timberstyle = timber_variable_blength.values
+        blen_timberstyle = timber_variable_blength[1]
         blen_timberstyle = map(lambda x: np.array(map(float, x)), blen_timberstyle)
-
+        
         N_acq = len(self.t_stamps)
 
         for ii in xrange(N_acq):
@@ -108,8 +91,9 @@ class blength:
 
         self.t_stamps = np.array(self.t_stamps)
         self.avblen = np.array(map(mean_nonzero, self.blen))
-
-
+        self.t_str=np.array([datetime.datetime.fromtimestamp(self.t_stamps[ii]) for ii in np.arange(len(self.t_stamps))])
+        self.blen = np.squeeze(self.blen)
+            
     def nearest_older_sample(self, t_obs, flag_return_time=False):
         ind_min = np.argmin(np.abs(self.t_stamps - t_obs))
         if self.t_stamps[ind_min]>t_obs:
@@ -149,3 +133,6 @@ def variable_list(beams = [1,2]):
                 var_list += get_variable_dict(beam).values()
 
     return var_list
+
+# fl = filled_buckets(data,beam = beam)
+# fl.
