@@ -14,7 +14,7 @@ import os
 import numpy as np
 
 
-filln= 5313  #5312
+filln= 5345 #5332 #5313  #5312
 
 mdb=pytimber.LoggingDB(source='mdb')
 ldb = pytimber.LoggingDB(source='ldb')
@@ -34,13 +34,13 @@ for ind,el in enumerate(a):
         ts2_fill=mdb.getLHCFillData(fill_number=filln)['beamModes'][ind]['startTime']
         print beamMode2+' startTime: %.1f'%ts2_fill
 # ts1 = time.time()-1*3600
-# ts2 = time.time()
+ts2_fill = time.time()
 
 #ts1 = calendar.timegm(time.strptime("2016-09-19 15:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
 #ts2 = calendar.timegm(time.strptime("2016-09-19 16:30:00","%Y-%m-%d %H:%M:%S"))-2*3600
 
-ts1 = calendar.timegm(time.strptime("2016-09-19 20:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
-ts2 = calendar.timegm(time.strptime("2016-09-20 02:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
+ts1 = calendar.timegm(time.strptime("2016-09-28 13:00:00","%Y-%m-%d %H:%M:%S"))-2*3600
+ts2 = calendar.timegm(time.strptime("2016-09-28 13:40:00","%Y-%m-%d %H:%M:%S"))-2*3600
 
 print 'ts1 = '+time.strftime("%b %d %Y %H:%M:%S", time.localtime(ts1))
 print 'ts2 = '+time.strftime("%b %d %Y %H:%M:%S", time.localtime(ts2))
@@ -98,9 +98,9 @@ db.store(data)
 
 # Collimators
 import LHC_Coll
-data=mdb.get(LHC_Coll.variable_list(beam=1),ts1,ts2)
+data=ldb.get(LHC_Coll.variable_list(beam=1),ts1,ts2)
 db.store(data)
-data=mdb.get(LHC_Coll.variable_list(beam=2),ts1,ts2)
+data=ldb.get(LHC_Coll.variable_list(beam=2),ts1,ts2)
 db.store(data)
 
 
